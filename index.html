@@ -88,6 +88,7 @@
   /* liquid-glass edge: a single highlight slowly orbiting the border */
   .card::before{
     content:""; position:absolute; inset:0; border-radius:inherit; padding:1px;
+    pointer-events:none;
     background:conic-gradient(from var(--a,0deg),rgba(255,255,255,.04) 0deg,rgba(255,255,255,.55) 42deg,rgba(255,255,255,.06) 110deg,rgba(255,255,255,.04) 360deg);
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor; mask-composite:exclude;
