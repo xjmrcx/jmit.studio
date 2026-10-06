@@ -22,8 +22,14 @@ test('contact classification normalizes email and US/explicit international phon
 test('modern secret uses apikey only; legacy service-role uses Bearer', () => {
   assert.equal(databaseConfig(env).headers.Authorization, undefined);
   assert.equal(databaseConfig({...env,SUPABASE_SECRET_KEY:'legacy.jwt.key'}).headers.Authorization,'Bearer legacy.jwt.key');
+  assert.equal(databaseConfig({...env,SUPABASE_SECRET_KEY:'  sb_secret_fake\n'}).headers.apikey,'sb_secret_fake');
   assert.throws(()=>databaseConfig({}), /not_configured/);
   assert.throws(()=>databaseConfig({...env,SUPABASE_URL:'http://localhost'}), /not_configured/);
+});
+test('network errors expose only a machine code, not raw error text', async () => {
+  await assert.rejects(saveSignup(classify(row.contact),'jmit.app',env,async()=> {
+    const error = new Error('private upstream detail'); error.cause={code:'ENOTFOUND'}; throw error;
+  }), /database_unreachable_ENOTFOUND/);
 });
 test('primary insert requests only necessary columns and suppresses duplicates', async () => {
   await saveSignup(classify(row.contact),'jmit.app',env,async (url,options)=> {
