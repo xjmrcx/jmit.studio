@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="70 155 518 297" role="img" aria-label="JMIT">
+  <title>JMIT</title>
+  <!-- three slanted bars; top row half gray, half white -->
+  <polygon fill="#58595b" points="175,220 400,220 418,170 193,170"/>
+  <polygon fill="#ffffff" points="400,220 555,220 573,170 418,170"/>
+  <polygon fill="#58595b" points="133,327 312,327 328,283 149,283"/>
+  <polygon fill="#ffffff" points="352,327 520,327 536,283 368,283"/>
+  <polygon fill="#ffffff" points="85,437 478,437 496,388 103,388"/>
+</svg>

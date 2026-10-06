@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JMIT — Coming soon</title>
+<meta name="description" content="Something new from JMIT. Sign up to be the first to know.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://jmit.app/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JMIT — Coming soon">
+<meta property="og:description" content="Something new from JMIT. Sign up to be the first to know.">
+<meta property="og:url" content="https://jmit.app/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#000;
+    --ink:#f4f4f5;
+    --dim:rgba(244,244,245,.46);
+    --faint:rgba(244,244,245,.12);
+    --glass:rgba(255,255,255,.045);
+    --edge:rgba(255,255,255,.10);
+    --glow:rgba(255,255,255,.72);
+    --ok:#7df0c0;
+    --bad:#ff8f8f;
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font); -webkit-font-smoothing:antialiased;
+    display:grid; place-items:center; padding:24px;
+    overflow:hidden;
+  }
+
+  /* ───── ambient: one slow line of light, drifting ───── */
+  .amb{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0}
+  .line{
+    position:absolute; left:-30%; width:160%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.015) 15%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.015) 85%,transparent);
+    filter:blur(.3px);
+    opacity:0;
+    animation:drift 22s cubic-bezier(.45,0,.55,1) infinite;
+  }
+  .line:nth-child(1){top:32%; animation-delay:0s}
+  .line:nth-child(2){top:58%; animation-delay:7.5s; transform:scaleX(-1)}
+  .line:nth-child(3){top:44%; animation-delay:15s; opacity:0}
+  @keyframes drift{
+    0%{transform:translate3d(-14%,40px,0) rotate(-1.2deg); opacity:0}
+    18%{opacity:.5}
+    50%{transform:translate3d(0,-10px,0) rotate(.6deg); opacity:.85}
+    82%{opacity:.4}
+    100%{transform:translate3d(14%,-40px,0) rotate(1.2deg); opacity:0}
+  }
+  /* a soft breathing halo behind the card */
+  .halo{
+    position:absolute; left:50%; top:50%; width:min(820px,120vw); aspect-ratio:1;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.055),rgba(255,255,255,.012) 42%,transparent 66%);
+    animation:breathe 11s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{opacity:.55; transform:translate(-50%,-50%) scale(.97)}50%{opacity:1; transform:translate(-50%,-50%) scale(1.05)}}
+  /* grain, so the black is not flat */
+  .grain{
+    position:absolute; inset:-100%; opacity:.028;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:shift 7s steps(6) infinite;
+  }
+  @keyframes shift{
+    0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}
+    60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,1%)}100%{transform:translate(0,0)}
+  }
+
+  /* ───── the card ───── */
+  main{position:relative; z-index:1; width:100%; max-width:460px; text-align:center}
+
+  .card{
+    position:relative; border-radius:28px; padding:44px 30px 34px;
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(26px) saturate(180%);
+    backdrop-filter:blur(26px) saturate(180%);
+    box-shadow:0 1px 0 rgba(255,255,255,.07) inset, 0 -1px 0 rgba(255,255,255,.03) inset, 0 40px 120px -40px rgba(0,0,0,.9);
+    animation:rise .9s cubic-bezier(.2,.8,.2,1) both;
+  }
+  /* liquid-glass edge: a single highlight slowly orbiting the border */
+  .card::before{
+    content:""; position:absolute; inset:0; border-radius:inherit; padding:1px;
+    background:conic-gradient(from var(--a,0deg),rgba(255,255,255,.04) 0deg,rgba(255,255,255,.55) 42deg,rgba(255,255,255,.06) 110deg,rgba(255,255,255,.04) 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation:orbit 14s linear infinite;
+  }
+  @property --a{syntax:'<angle>'; inherits:false; initial-value:0deg}
+  @keyframes orbit{to{--a:360deg}}
+  @supports not (background:conic-gradient(from 0deg,#000,#fff)){
+    .card::before{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.05)); animation:none}
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(18px) scale(.985)}to{opacity:1; transform:none}}
+
+  /* logo */
+  .logo{display:block; margin:0 auto; height:60px; width:auto; max-width:230px; opacity:0; animation:in .8s .15s cubic-bezier(.2,.8,.2,1) both}
+  .mark{
+    font-size:38px; font-weight:200; letter-spacing:.42em; margin:0 0 0 .42em;
+    animation:in .8s .15s cubic-bezier(.2,.8,.2,1) both, settle 1.4s .15s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes settle{from{letter-spacing:.78em; opacity:0}to{letter-spacing:.42em; opacity:1}}
+  @keyframes in{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
+
+  .tag{
+    margin:22px 0 0; font-size:12px; font-weight:400; letter-spacing:.26em;
+    text-transform:uppercase; color:var(--dim);
+    animation:in .8s .35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .sub{margin:12px 0 0; font-size:14.5px; line-height:1.5; color:var(--dim); animation:in .8s .45s cubic-bezier(.2,.8,.2,1) both}
+
+  /* one box, email or phone */
+  form{margin:30px 0 0; animation:in .8s .55s cubic-bezier(.2,.8,.2,1) both}
+  .field{
+    position:relative; display:flex; align-items:center; gap:8px;
+    height:56px; padding:0 6px 0 18px; border-radius:999px;
+    background:rgba(255,255,255,.05);
+    box-shadow:0 0 0 1px var(--edge) inset;
+    transition:box-shadow .35s ease, background .35s ease;
+  }
+  .field:focus-within{background:rgba(255,255,255,.085); box-shadow:0 0 0 1px rgba(255,255,255,.26) inset, 0 0 40px -12px rgba(255,255,255,.3)}
+  /* light sweeps the field when focused */
+  .field::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%);
+    transform:translateX(-120%); opacity:0;
+  }
+  .field:focus-within::after{animation:sweep 1.5s cubic-bezier(.3,0,.3,1) .05s; opacity:1}
+  @keyframes sweep{to{transform:translateX(120%)}}
+
+  input{
+    flex:1; min-width:0; height:100%; border:0; background:none; outline:none;
+    color:var(--ink); font:inherit; font-size:15.5px; letter-spacing:.01em;
+  }
+  input::placeholder{color:rgba(244,244,245,.34)}
+  input:-webkit-autofill{-webkit-text-fill-color:var(--ink); -webkit-box-shadow:0 0 0 60px #0a0a0a inset}
+
+  button{
+    flex:0 0 auto; width:44px; height:44px; border:0; border-radius:50%; cursor:pointer;
+    background:rgba(255,255,255,.1); color:var(--ink);
+    display:grid; place-items:center;
+    transition:background .25s ease, transform .25s cubic-bezier(.2,.8,.2,1), opacity .2s;
+  }
+  button:hover{background:rgba(255,255,255,.2)}
+  button:active{transform:scale(.92)}
+  button:focus-visible{outline:2px solid rgba(255,255,255,.6); outline-offset:2px}
+  button[disabled]{opacity:.45; cursor:default}
+  button svg{width:17px; height:17px; stroke:currentColor; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round}
+  /* the arrow turns into a spinner while sending */
+  .spin{display:none; width:16px; height:16px; border-radius:50%;
+    border:1.6px solid rgba(255,255,255,.28); border-top-color:var(--ink);
+    animation:rot .7s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  form.busy .arrow{display:none}
+  form.busy .spin{display:block}
+
+  .note{min-height:18px; margin:14px 0 0; font-size:12.5px; letter-spacing:.02em; color:var(--dim); transition:color .3s}
+  .note[data-s="bad"]{color:var(--bad)}
+  .note[data-s="ok"]{color:var(--ok)}
+
+  /* success: the card quiets down to one line */
+  #doneBox{display:none}
+  main.sent .card{padding:40px 30px}
+  main.sent form,main.sent .sub{display:none}
+  main.sent #doneBox{display:block; animation:in .7s cubic-bezier(.2,.8,.2,1) both}
+  #doneBox p{margin:18px 0 0; font-size:15px; line-height:1.55; color:var(--dim)}
+  .check{width:30px; height:30px; margin:4px auto 0; display:block; stroke:var(--ok); stroke-width:1.5; fill:none; stroke-linecap:round}
+  .check path{stroke-dasharray:30; stroke-dashoffset:30; animation:draw .7s .15s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  footer{margin:26px 0 0; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(244,244,245,.26); animation:in .8s .7s both}
+
+  @media (max-width:420px){
+    .card{padding:38px 22px 30px; border-radius:24px}
+    .mark{font-size:30px}
+    .logo{height:50px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
+    .line,.grain{display:none}
+  }
+</style>
+</head>
+<body>
+  <div class="amb" aria-hidden="true">
+    <div class="halo"></div>
+    <div class="line"></div><div class="line"></div><div class="line"></div>
+    <div class="grain"></div>
+  </div>
+
+  <main id="main">
+    <div class="card">
+      <!-- drop logo.svg (or logo.png) next to index.html and it replaces the wordmark -->
+      <img class="logo" id="logo" src="/logo.svg" alt="JMIT" hidden>
+      <h1 class="mark" id="mark">JMIT</h1>
+
+      <p class="tag">Coming soon</p>
+      <p class="sub">Something new is on the way.<br>Sign up and you'll be the first to know.</p>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <input id="contact" name="contact" type="text" inputmode="email"
+                 autocomplete="email" autocapitalize="off" spellcheck="false"
+                 placeholder="Email or phone number" aria-label="Email or phone number" required>
+          <button type="submit" id="go" aria-label="Sign up">
+            <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+            <span class="spin" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p class="note" id="note" role="status" aria-live="polite"></p>
+      </form>
+
+      <div id="doneBox">
+        <svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5.2 5.2L20 7"/></svg>
+        <p>You're on the list.<br>We'll reach out the moment it's live.</p>
+      </div>
+    </div>
+    <footer>JM IT, INC</footer>
+  </main>
+
+<script>
+  // Show the real logo only if the file is actually there, so a missing
+  // file never leaves a broken image on the page.
+  (function(){
+    var img = document.getElementById('logo'), mark = document.getElementById('mark');
+    var sources = ['/logo.svg','/logo.png'];
+    (function tryNext(i){
+      if (i >= sources.length) return;            // no file: the wordmark stays
+      var probe = new Image();
+      probe.onload = function(){ img.src = sources[i]; img.hidden = false; mark.remove(); };
+      probe.onerror = function(){ tryNext(i + 1); };
+      probe.src = sources[i];
+    })(0);
+  })();
+
+  var form = document.getElementById('form');
+  var input = document.getElementById('contact');
+  var note = document.getElementById('note');
+  var go = document.getElementById('go');
+  var main = document.getElementById('main');
+
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+  function digits(v){ return v.replace(/[^\d]/g,''); }
+  function kindOf(v){
+    v = v.trim();
+    if (EMAIL.test(v)) return 'email';
+    var d = digits(v);
+    // US/intl: 10 digits, or 11 starting with 1, or an international +
+    if (/^[+(\d][\d\s().\-]{6,}$/.test(v) && d.length >= 10 && d.length <= 15) return 'phone';
+    return null;
+  }
+
+  function say(msg, state){ note.textContent = msg || ''; if (state) note.dataset.s = state; else delete note.dataset.s; }
+
+  // keep the right keyboard on phones as they type
+  input.addEventListener('input', function(){
+    var v = input.value;
+    var looksPhone = v && /^[+\d]/.test(v.trim()) && !v.includes('@');
+    var want = looksPhone ? 'tel' : 'email';
+    if (input.getAttribute('inputmode') !== want) input.setAttribute('inputmode', want);
+    if (note.textContent) say('');
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (form.classList.contains('busy')) return;
+
+    var value = input.value.trim();
+    var kind = kindOf(value);
+    if (!kind){
+      say('Enter an email address or a phone number.', 'bad');
+      input.focus();
+      return;
+    }
+
+    form.classList.add('busy'); go.disabled = true; say('');
+
+    fetch('/api/subscribe', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contact:value, kind:kind, source:'jmit.app' })
+    }).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(b){ return { ok:r.ok, body:b }; });
+    }).then(function(res){
+      if (!res.ok) throw new Error(res.body && res.body.error || 'failed');
+      main.classList.add('sent');
+    }).catch(function(){
+      form.classList.remove('busy'); go.disabled = false;
+      say("That didn't go through. Please try again.", 'bad');
+    });
+  });
+</script>
+</body>
+</html>
