@@ -25,6 +25,9 @@ test('modern secret uses apikey only; legacy service-role uses Bearer', () => {
   assert.equal(databaseConfig({...env,SUPABASE_SECRET_KEY:'  sb_secret_fake\n'}).headers.apikey,'sb_secret_fake');
   assert.throws(()=>databaseConfig({}), /not_configured/);
   assert.throws(()=>databaseConfig({...env,SUPABASE_URL:'http://localhost'}), /not_configured/);
+  for (const key of ['sb_secret_…', 'sb_secret_********', 'sb_publishable_fake']) {
+    assert.throws(()=>databaseConfig({...env,SUPABASE_SECRET_KEY:key}), /invalid_server_key_format/);
+  }
 });
 test('network errors expose only a machine code, not raw error text', async () => {
   await assert.rejects(saveSignup(classify(row.contact),'jmit.app',env,async()=> {

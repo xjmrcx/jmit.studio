@@ -13,8 +13,8 @@ export default async function handler(req, res) {
   const parsed = classify(body?.contact);
   if (!parsed) return res.status(400).json({ error: 'invalid_contact' });
   const source = typeof body?.source === 'string' ? body.source.slice(0, 60) : 'jmit.app';
-  try { databaseConfig(); } catch {
-    console.error('waitlist_database_not_configured');
+  try { databaseConfig(); } catch (error) {
+    console.error('waitlist_database_not_configured', error?.message === 'invalid_server_key_format' ? 'invalid_server_key_format' : 'missing_configuration');
     return res.status(503).json({ error: 'not_configured' });
   }
   let row;
