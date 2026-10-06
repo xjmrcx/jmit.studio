@@ -18,8 +18,9 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: 'not_configured' });
   }
   let row;
-  try { row = await saveSignup(parsed, source); } catch {
-    console.error('waitlist_primary_write_failed');
+  try { row = await saveSignup(parsed, source); } catch (error) {
+    const code = /^database_[A-Za-z0-9_]+$/.test(error?.message || '') ? error.message : 'database_unknown';
+    console.error('waitlist_primary_write_failed', code);
     return res.status(502).json({ error: 'storage_unavailable' });
   }
   // Do not report failure for an Airtable mirror problem after the signup is saved.
