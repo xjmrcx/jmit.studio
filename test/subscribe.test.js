@@ -100,3 +100,29 @@ test('endpoint reports primary storage failure but accepts a durable signup on m
     globalThis.fetch=original;for(const n of names){if(previous[n]===undefined)delete process.env[n];else process.env[n]=previous[n];}
   }
 });
+
+test('endpoint stores in Airtable when the database is not configured', async () => {
+  const names=['SUPABASE_URL','SUPABASE_SECRET_KEY','AIRTABLE_TOKEN'];
+  const previous=Object.fromEntries(names.map(n=>[n,process.env[n]]));const original=globalThis.fetch;
+  try {
+    delete process.env.SUPABASE_URL;delete process.env.SUPABASE_SECRET_KEY;process.env.AIRTABLE_TOKEN='token';
+    let upserted=null;
+    globalThis.fetch=async(url,options)=> {
+      assert.equal(url.startsWith('https://api.airtable.com/'),true,'only Airtable is called');
+      upserted=JSON.parse(options.body);
+      return {ok:true,status:200,json:async()=>({records:[{id:'rec1'}]})};
+    };
+    const response=await invoke('POST',{contact:row.contact});
+    assert.equal(response.code,200);assert.deepEqual(response.payload,{ok:true,store:'airtable'});
+    assert.deepEqual(upserted.performUpsert,{fieldsToMergeOn:['Contact']},'a retry must not create a second row');
+    assert.equal(upserted.records[0].fields.Contact,row.contact);
+    // Airtable unreachable must be reported, never silently accepted.
+    globalThis.fetch=async()=>({ok:false,status:500});
+    assert.equal((await invoke('POST',{contact:row.contact})).code,502);
+    // No store at all is still a refusal, not a pretend success.
+    delete process.env.AIRTABLE_TOKEN;
+    assert.equal((await invoke('POST',{contact:row.contact})).code,503);
+  } finally {
+    globalThis.fetch=original;for(const n of names){if(previous[n]===undefined)delete process.env[n];else process.env[n]=previous[n];}
+  }
+});
