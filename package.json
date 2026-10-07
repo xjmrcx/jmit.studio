@@ -5,6 +5,7 @@
   "description": "Coming-soon page for jmit.app",
   "scripts": {
     "test": "node --test test/*.test.js",
+    "test:cov": "node --test --experimental-test-coverage test/*.test.js",
     "mirror:retry": "node scripts/retry-airtable.mjs"
   }
 }
