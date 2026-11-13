@@ -1,4 +1,4 @@
-# jmit.app — coming soon
+# jmit.studio— coming soon
 
 A static page and a serverless signup function. No framework, build step, or runtime dependencies.
 
